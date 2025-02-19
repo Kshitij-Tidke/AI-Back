@@ -4,13 +4,15 @@ import cors from 'cors';
 import taskRoutes from './routes/taskRoutes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import morgan from 'morgan';
+import dotenv from "dotenv"
 
+dotenv.config()
 const app = express();
 
 app.use(express.json());
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'https://ai-front-pi.vercel.app'],
+    origin: ['http://localhost:5173', process.env.API_URL],
     methods: ['GET', 'POST', 'DELETE', 'POST'],
   })
 );
