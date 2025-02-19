@@ -26,24 +26,28 @@ export const createTask = (req, res) => {
 // ✅ Update an existing task
 export const updateTask = (req, res) => {
   const { title, description, completed } = req.body;
-  if (!title && !description && !completed) {
-    return res.status(400).json({ message: "At least one field must be updated." });
-  }
-
-  const tasks = loadTasks();
+  let tasks = loadTasks();
   const taskIndex = tasks.findIndex((task) => task.id === req.params.id);
 
-  if (taskIndex !== -1) {
-    if (title !== undefined) tasks[taskIndex].title = title;
-    if (description !== undefined) tasks[taskIndex].description = description;
-    if (completed !== undefined) tasks[taskIndex].completed = Boolean(completed);
-
-    saveTasks(tasks);
-    return res.json(tasks[taskIndex]);
-  } else {
+  if (taskIndex === -1) {
     return res.status(404).json({ message: "Task not found" });
   }
+
+  // Update fields if provided
+  if (title !== undefined) tasks[taskIndex].title = title;
+  if (description !== undefined) tasks[taskIndex].description = description;
+
+  // Toggle or explicitly set `completed`
+  if (completed === undefined) {
+    tasks[taskIndex].completed = !tasks[taskIndex].completed; 
+  } else {
+    tasks[taskIndex].completed = Boolean(completed); 
+  }
+
+  saveTasks(tasks);
+  return res.json({ message: "Task updated successfully", task: tasks[taskIndex] });
 };
+
 
 // ✅ Delete a task
 export const deleteTask = (req, res) => {
@@ -57,3 +61,21 @@ export const deleteTask = (req, res) => {
   saveTasks(filteredTasks);
   return res.json({ message: "Task deleted successfully" });
 };
+
+// // ✅ Toggle a task
+// export const toggleTask = (req, res) => {
+//   let tasks = loadTasks();
+//   const taskIndex = tasks.findIndex((task) => task.id === req.params.id);
+
+//   if (taskIndex === -1) {
+//     return res.status(404).json({ message: "Task not found" });
+//   }
+
+//   // Toggle the completed status
+//   tasks[taskIndex].completed = !tasks[taskIndex].completed;
+
+//   // Save the updated tasks list
+//   saveTasks(tasks);
+
+//   return res.status(200).json({ message: "Toggled successfully", task: tasks[taskIndex] });
+// };
