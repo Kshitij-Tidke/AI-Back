@@ -1,10 +1,10 @@
-import Task from "../models/Task.js";
+import Task from "../models/task.js";
 import { loadTasks, saveTasks } from "../utils/fileHelper.js";
 
 // ✅ Get all tasks
 export const getTasks = (req, res) => {
   const tasks = loadTasks();
-  res.json(tasks);
+  return res.json(tasks);
 };
 
 // ✅ Create a new task
@@ -20,13 +20,13 @@ export const createTask = (req, res) => {
   tasks.push(newTask);
   saveTasks(tasks);
 
-  res.status(201).json(newTask);
+  return res.status(201).json(newTask);
 };
 
 // ✅ Update an existing task
 export const updateTask = (req, res) => {
   const { title, description, completed } = req.body;
-  if (title === undefined && description === undefined && completed === undefined) {
+  if (!title && !description && !completed) {
     return res.status(400).json({ message: "At least one field must be updated." });
   }
 
@@ -39,9 +39,9 @@ export const updateTask = (req, res) => {
     if (completed !== undefined) tasks[taskIndex].completed = Boolean(completed);
 
     saveTasks(tasks);
-    res.json(tasks[taskIndex]);
+    return res.json(tasks[taskIndex]);
   } else {
-    res.status(404).json({ message: "Task not found" });
+    return res.status(404).json({ message: "Task not found" });
   }
 };
 
@@ -55,5 +55,5 @@ export const deleteTask = (req, res) => {
   }
 
   saveTasks(filteredTasks);
-  res.json({ message: "Task deleted successfully" });
+  return res.json({ message: "Task deleted successfully" });
 };
