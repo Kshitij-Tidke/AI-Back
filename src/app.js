@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: ['http://localhost:5173', process.env.API_URL],
-    methods: ['GET', 'POST', 'DELETE', 'POST'],
+    methods: ['GET', 'PUT', 'DELETE', 'POST'],
   })
 );
 app.use(morgan('dev'));
