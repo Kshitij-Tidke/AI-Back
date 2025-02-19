@@ -23,9 +23,8 @@ export const createTask = (req, res) => {
   return res.status(201).json(newTask);
 };
 
-// ✅ Update an existing task
 export const updateTask = (req, res) => {
-  const { title, description, completed } = req.body;
+  const { title, description, completed, toggle } = req.body;
   let tasks = loadTasks();
   const taskIndex = tasks.findIndex((task) => task.id === req.params.id);
 
@@ -33,15 +32,17 @@ export const updateTask = (req, res) => {
     return res.status(404).json({ message: "Task not found" });
   }
 
-  // Update fields if provided
+  // Update only the fields provided
   if (title !== undefined) tasks[taskIndex].title = title;
   if (description !== undefined) tasks[taskIndex].description = description;
 
-  // Toggle or explicitly set `completed`
-  if (completed === undefined) {
-    tasks[taskIndex].completed = !tasks[taskIndex].completed; 
-  } else {
-    tasks[taskIndex].completed = Boolean(completed); 
+  // Toggle `completed` only when `toggle: true` is explicitly passed
+  if (toggle) {
+    tasks[taskIndex].completed = !tasks[taskIndex].completed;
+  } 
+  // Otherwise, set `completed` only if provided
+  else if (completed !== undefined) {
+    tasks[taskIndex].completed = Boolean(completed);
   }
 
   saveTasks(tasks);
@@ -61,21 +62,3 @@ export const deleteTask = (req, res) => {
   saveTasks(filteredTasks);
   return res.json({ message: "Task deleted successfully" });
 };
-
-// // ✅ Toggle a task
-// export const toggleTask = (req, res) => {
-//   let tasks = loadTasks();
-//   const taskIndex = tasks.findIndex((task) => task.id === req.params.id);
-
-//   if (taskIndex === -1) {
-//     return res.status(404).json({ message: "Task not found" });
-//   }
-
-//   // Toggle the completed status
-//   tasks[taskIndex].completed = !tasks[taskIndex].completed;
-
-//   // Save the updated tasks list
-//   saveTasks(tasks);
-
-//   return res.status(200).json({ message: "Toggled successfully", task: tasks[taskIndex] });
-// };
